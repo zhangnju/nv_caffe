@@ -191,7 +191,7 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 	net.Reshape();
 
 	std::vector<cv::Mat> input_channels;
-	float* input_data = input_layer->mutable_cpu_data<Dtype>();
+	Dtype* input_data = input_layer->mutable_cpu_data<Dtype>();
 	for (int i = 0; i < input_layer->channels(); ++i) {
 		cv::Mat channel(height, width, CV_32FC1, input_data);
 		input_channels.push_back(channel);
