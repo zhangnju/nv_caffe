@@ -10,9 +10,9 @@
 
 namespace caffe {
 
-template <typename Dtype>
-void RegionLayer<Dtype>::Reshape(
-	const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+template <typename Ftype, typename Btype>
+void RegionLayer<Ftype, Btype>::Reshape(
+	const vector<Blob*>& bottom, const vector<Blob*>& top) {
 	//reshpe top blob
 	vector<int> box_shape(4);
 	box_shape[0] = num_; box_shape[1] = height_;
@@ -25,8 +25,8 @@ void RegionLayer<Dtype>::Reshape(
 	top[1]->Reshape(prob_shape);
 }
 
-template <typename Dtype>
-inline void softmax_cpu(Dtype *input, int n, int batch, int batch_offset, int groups, int group_offset, int stride)
+template <typename Ftype>
+inline void softmax_cpu(Ftype *input, int n, int batch, int batch_offset, int groups, int group_offset, int stride)
 {
 	for (int b = 0; b < batch; ++b){
 		for (int g = 0; g < groups; ++g){
@@ -35,9 +35,9 @@ inline void softmax_cpu(Dtype *input, int n, int batch, int batch_offset, int gr
 	}
 }
 
-template <typename Dtype>
-vector<Dtype> get_region_box(Dtype* x, vector<Dtype> biases, int n, int index, int i, int j, int w, int h , int stride){
-  vector<Dtype> b;
+template <typename Ftype>
+vector<Ftype> get_region_box(Ftype* x, vector<Ftype> biases, int n, int index, int i, int j, int w, int h , int stride){
+  vector<Ftype> b;
   b.push_back((i + x[index + 0*stride]) / w);
   b.push_back((j + x[index + 1*stride]) / h);
   b.push_back(exp(x[index + 2*stride]) * biases[2*n] / w);
@@ -45,16 +45,16 @@ vector<Dtype> get_region_box(Dtype* x, vector<Dtype> biases, int n, int index, i
   return b;
 }
 
-template <typename Dtype>
-inline Dtype sigmoid(Dtype x)
+template <typename Ftype>
+inline Ftype sigmoid(Ftype x)
 {
 	return 1. / (1. + exp(-x));
 }
 
-template <typename Dtype>
-void RegionLayer<Dtype>::LayerSetUp(
-    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-  Layer<Dtype>::LayerSetUp(bottom, top);
+template <typename Ftype, typename Btype>
+void RegionLayer<Ftype, Btype>::LayerSetUp(
+    const vector<Blob*>& bottom, const vector<Blob*>& top) {
+  Layer<Ftype, Btype>::LayerSetUp(bottom, top);
   
   RegionLossParameter param = this->layer_param_.region_loss_param();
   
@@ -84,12 +84,12 @@ void RegionLayer<Dtype>::LayerSetUp(
 }
 
 
-template <typename Dtype>
-void RegionLayer<Dtype>::Forward_cpu(
-    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-	Dtype* input_data = bottom[0]->mutable_cpu_data();
-	Dtype* box_data = top[0]->mutable_cpu_data();
-	Dtype* prob_data = top[1]->mutable_cpu_data();
+template <typename Ftype, typename Btype>
+void RegionLayer<Ftype, Btype>::Forward_cpu(
+    const vector<Blob*>& bottom, const vector<Blob*>& top) {
+	Ftype* input_data = bottom[0]->mutable_cpu_data();
+	Ftype* box_data = top[0]->mutable_cpu_data();
+	Ftype* prob_data = top[1]->mutable_cpu_data();
 	for (int b = 0; b < batch_; b++)
 	{
 		for (int n = 0; n < num_; n++)

@@ -8,9 +8,9 @@
 
 namespace caffe {
 
-template <typename Dtype>
-void DetectionLayer<Dtype>::Reshape(
-	const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+template <typename Ftype, typename Btype>
+void DetectionLayer<Ftype, Btype>::Reshape(
+	const vector<Blob*>& bottom, const vector<Blob*>& top) {
 	//reshpe top blob
 	vector<int> box_shape(4);
 	box_shape[0] = num_object_; box_shape[1] = width_;
@@ -23,10 +23,10 @@ void DetectionLayer<Dtype>::Reshape(
 	top[1]->Reshape(prob_shape);
 }
 
-template <typename Dtype>
-void DetectionLayer<Dtype>::LayerSetUp(
-    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-  Layer<Dtype>::LayerSetUp(bottom, top);
+template <typename Ftype, typename Btype>
+void DetectionLayer<Ftype, Btype>::LayerSetUp(
+    const vector<Blob*>& bottom, const vector<Blob*>& top) {
+  Layer<Ftype, Btype>::LayerSetUp(bottom, top);
   DetectionLossParameter param = this->layer_param_.detection_loss_param();
   width_ = param.side();
   height_ = param.side();
@@ -60,12 +60,12 @@ inline void softmax(Dtype *input, int n)
 		input[i] = exp(input[i] - sum);
 	}
 }*/
-template <typename Dtype>
-void DetectionLayer<Dtype>::Forward_cpu(
-    const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-  Dtype* input_data = bottom[0]->mutable_cpu_data();
-  Dtype* box_data = top[0]->mutable_cpu_data();//check the size is right
-  Dtype* prob_data = top[1]->mutable_cpu_data();
+template <typename Ftype, typename Btype>
+void DetectionLayer<Ftype, Btype>::Forward_cpu(
+    const vector<Blob*>& bottom, const vector<Blob*>& top) {
+  Ftype* input_data = bottom[0]->mutable_cpu_data();
+  Ftype* box_data = top[0]->mutable_cpu_data();//check the size is right
+  Ftype* prob_data = top[1]->mutable_cpu_data();
   if (softmax_){
 	  for (int b = 0; b < batch_; ++b){
 		  int index = b*width_*height_*((1 + coords_)*num_object_ + num_class_);

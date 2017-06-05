@@ -8,24 +8,24 @@
 
 namespace caffe {
 
-template <typename Dtype>
-class RegionLayer : public Layer<Dtype> {
+template <typename Ftype, typename Btype>
+class RegionLayer : public Layer<Ftype, Btype> {
  public:
   explicit RegionLayer(const LayerParameter& param)
-	  : Layer<Dtype>(param) {}
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
-  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
+	  : Layer<Ftype, Btype>(param) {}
+  virtual void LayerSetUp(const vector<Blob*>& bottom,
+      const vector<Blob*>& top);
+  virtual void Reshape(const vector<Blob*>& bottom,
+      const vector<Blob*>& top);
 
   virtual inline const char* type() const { return "Region"; }
 
  protected:
-  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
+  virtual void Forward_cpu(const vector<Blob*>& bottom,
+      const vector<Blob*>& top);
 
-  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
-	  const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom){
+  virtual void Backward_cpu(const vector<Blob*>& top,
+	  const vector<bool>& propagate_down, const vector<Blob*>& bottom){
 	  for (int i = 0; i < propagate_down.size(); ++i) {
 		  if (propagate_down[i]) { NOT_IMPLEMENTED; }
 	  }
