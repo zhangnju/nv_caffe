@@ -101,7 +101,7 @@ void DetectionLayer<Ftype, Btype>::Forward_cpu(
   
 }
 
-INSTANTIATE_CLASS(DetectionLayer);
+INSTANTIATE_CLASS_FB(DetectionLayer);
 REGISTER_LAYER_CLASS(Detection);
 
 }  // namespace caffe

@@ -140,7 +140,7 @@ void RegionLayer<Ftype, Btype>::Forward_cpu(
 		}
 	
 }
-INSTANTIATE_CLASS(RegionLayer);
+INSTANTIATE_CLASS_FB(RegionLayer);
 REGISTER_LAYER_CLASS(Region);
 
 }  // namespace caffe
