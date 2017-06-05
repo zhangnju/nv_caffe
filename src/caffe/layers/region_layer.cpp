@@ -87,9 +87,9 @@ void RegionLayer<Ftype, Btype>::LayerSetUp(
 template <typename Ftype, typename Btype>
 void RegionLayer<Ftype, Btype>::Forward_cpu(
     const vector<Blob*>& bottom, const vector<Blob*>& top) {
-	Ftype* input_data = bottom[0]->mutable_cpu_data();
-	Ftype* box_data = top[0]->mutable_cpu_data();
-	Ftype* prob_data = top[1]->mutable_cpu_data();
+	Ftype* input_data = bottom[0]->mutable_cpu_data<Ftype>();
+	Ftype* box_data = top[0]->mutable_cpu_data<Ftype>();
+	Ftype* prob_data = top[1]->mutable_cpu_data<Ftype>();
 	for (int b = 0; b < batch_; b++)
 	{
 		for (int n = 0; n < num_; n++)
@@ -123,7 +123,7 @@ void RegionLayer<Ftype, Btype>::Forward_cpu(
 			int box_index = entry_index(0, n*width_*height_ + i, 0);
 			float scale = input_data[obj_index];
 		 
-			vector<Dtype > box= get_region_box(input_data, biases_, n, box_index, col, row, width_, height_, width_*height_);
+			vector<Ftype > box= get_region_box(input_data, biases_, n, box_index, col, row, width_, height_, width_*height_);
 			for (int k = 0; k < box.size(); k++)
 				box_data[index*coords_ + k] = box[k];
 			int class_index = entry_index(0, n*width_*height_ + i, 5);

@@ -63,9 +63,9 @@ inline void softmax(Dtype *input, int n)
 template <typename Ftype, typename Btype>
 void DetectionLayer<Ftype, Btype>::Forward_cpu(
     const vector<Blob*>& bottom, const vector<Blob*>& top) {
-  Ftype* input_data = bottom[0]->mutable_cpu_data();
-  Ftype* box_data = top[0]->mutable_cpu_data();//check the size is right
-  Ftype* prob_data = top[1]->mutable_cpu_data();
+  Ftype* input_data = bottom[0]->mutable_cpu_data<Ftype>();
+  Ftype* box_data = top[0]->mutable_cpu_data<Ftype>();//check the size is right
+  Ftype* prob_data = top[1]->mutable_cpu_data<Ftype>();
   if (softmax_){
 	  for (int b = 0; b < batch_; ++b){
 		  int index = b*width_*height_*((1 + coords_)*num_object_ + num_class_);
