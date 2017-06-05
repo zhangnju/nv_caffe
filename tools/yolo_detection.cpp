@@ -164,7 +164,8 @@ void ComputeAP(const vector<pair<float, int> >& tp, const int num_pos,
 }
 #endif
 static int num_class = 0;
-void preprocess_image(Net<float16>& net,std::string& input, int width, int height)
+template <typename Dtype>
+void preprocess_image(Net<Dtype>& net,std::string& input, int width, int height)
 {
 	cv::Mat resized, resized_float;
 	cv::Size size(width, height);
@@ -179,7 +180,7 @@ void preprocess_image(Net<float16>& net,std::string& input, int width, int heigh
 	}
 	resized.convertTo(resized_float, CV_32FC3);
 
-	Blob<float16>* input_layer = net.input_blobs()[0];
+	Blob<Dtype>* input_layer = net.input_blobs()[0];
 	int num_channels_ = input_layer->channels();
 	CHECK(num_channels_ == 3 || num_channels_ == 1)
 		<< "Input layer should have 1 or 3 channels.";
@@ -209,14 +210,14 @@ void preprocess_image(Net<float16>& net,std::string& input, int width, int heigh
 typedef struct{
 	int index_;
 	int class_;
-	float *probs_;
+	float16 *probs_;
 } sortable_bbox;
 
 int nms_comparator(const void *pa, const void *pb)
 {
 	sortable_bbox a = *(sortable_bbox *)pa;
 	sortable_bbox b = *(sortable_bbox *)pb;
-	float diff = a.probs_[a.index_*(num_class+1)+a.class_] - b.probs_[b.index_*(num_class+1)+b.class_];
+	float16 diff = a.probs_[a.index_*(num_class+1)+a.class_] - b.probs_[b.index_*(num_class+1)+b.class_];
 	if (diff < 0) return 1;
 	else if (diff > 0) return -1;
 	return 0;
@@ -241,8 +242,8 @@ Dtype Calc_iou(const vector<Dtype>& box, const vector<Dtype>& truth) {
 
 std::string labels[20] = { "aeroplane","bicycle","bird","boat","bottle","bus","car","cat","chair","cow",
                           "diningtable","dog","horse","motorbike","person","pottedplant","sheep","sofa","train","tvmonitor" };
-
-void draw_detections(std::string input, int num, const float *boxes, const float *probs, int classes)
+template <typename Dtype>
+void draw_detections(std::string input, int num, const  Dtype*boxes, const Dtype *probs, int classes)
 {
 	std::string prediction = "prediction.jpg";
 	cv::Mat orig_image = cv::imread(input, CV_LOAD_IMAGE_COLOR);
@@ -255,7 +256,7 @@ void draw_detections(std::string input, int num, const float *boxes, const float
 					class_id = j;
 			if (class_id == -1)
 				continue;
-			const float* b = &boxes[i*4];
+			const Dtype* b = &boxes[i*4];
 			int left = (*b - *(b+2) / 2.)*orig_image.cols;
 			int right = (*b + *(b+2) / 2.)*orig_image.cols;
 			int top = (*(b+1) - *(b+3) / 2.)*orig_image.rows;
@@ -317,7 +318,7 @@ int yolo_detection() {
     //preprocess image
 	preprocess_image(caffe_net, FLAGS_input, resize_width, resize_height);
     
-	const vector<Blob<float>*>& result = caffe_net.Forward();
+	const vector<Blob<Dtype>*>& result = caffe_net.Forward();
     
     Dtype* box_data = result[0]->mutable_cpu_data();
     int box_size = result[0]->count();
@@ -442,5 +443,5 @@ int main(int argc, char** argv) {
         "    yolo_detection [FLAGS] \n");
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   
-  return yolo_detection<float>();
+  return yolo_detection<float16>();
 }
