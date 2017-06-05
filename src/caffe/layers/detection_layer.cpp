@@ -82,16 +82,16 @@ void DetectionLayer<Ftype, Btype>::Forward_cpu(
 	  for (int n = 0; n < num_object_; ++n){
 		  int index = i*num_object_ + n;
 		  int p_index = width_*height_*num_class_ + i*num_object_ + n;
-		  Dtype scale = input_data[p_index];
+		  Ftype scale = input_data[p_index];
 		  int box_index = width_*height_*(num_class_ + num_object_) + (i*num_object_ + n) * 4;
 		  box_data[index*coords_] = (input_data[box_index + 0] + col) / width_; //check me ,here need to multiplied by image width
 		  box_data[index*coords_ + 1] = (input_data[box_index + 1] + row) / width_;//check me ,here need to multiplied by image height
 		  box_data[index*coords_ + 2] = pow(input_data[box_index + 2], (sqrt_ ? 2 : 1));
 		  box_data[index*coords_ + 3] = pow(input_data[box_index + 3], (sqrt_ ? 2 : 1));
-		  Dtype max_prob = 0;
+		  Ftype max_prob = 0;
 		  for (int j = 0; j < num_class_; ++j){
 			  int class_index = i*num_class_;
-			  Dtype prob = scale*input_data[class_index + j];
+			  Ftype prob = scale*input_data[class_index + j];
 			  prob_data[index*(num_class_+1) + j] = (prob > thresh_) ? prob : 0;
 			  if (prob > max_prob) max_prob = prob;
 		  }
