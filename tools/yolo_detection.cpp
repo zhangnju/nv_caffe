@@ -18,10 +18,8 @@
 #include "caffe/util/db.hpp"
 #include "caffe/util/format.hpp"
 #include "caffe/blob.hpp"
+#include "caffe/common.hpp"
 
-#include "half.hpp"
-
-using half_float::half;
 using caffe::Blob;
 using caffe::Caffe;
 using caffe::Net;
@@ -166,7 +164,7 @@ void ComputeAP(const vector<pair<float, int> >& tp, const int num_pos,
 }
 #endif
 static int num_class = 0;
-void preprocess_image(Net<float>& net,std::string& input, int width, int height)
+void preprocess_image(Net<float16>& net,std::string& input, int width, int height)
 {
 	cv::Mat resized, resized_float;
 	cv::Size size(width, height);
@@ -181,7 +179,7 @@ void preprocess_image(Net<float>& net,std::string& input, int width, int height)
 	}
 	resized.convertTo(resized_float, CV_32FC3);
 
-	Blob<float>* input_layer = net.input_blobs()[0];
+	Blob<float16>* input_layer = net.input_blobs()[0];
 	int num_channels_ = input_layer->channels();
 	CHECK(num_channels_ == 3 || num_channels_ == 1)
 		<< "Input layer should have 1 or 3 channels.";
