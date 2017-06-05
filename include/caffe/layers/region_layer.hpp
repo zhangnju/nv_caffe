@@ -45,7 +45,7 @@ class RegionLayer : public Layer<Ftype, Btype> {
   int absolute_;
   float thresh_;
   int random_;
-  vector<Dtype> biases_;
+  vector<Ftype> biases_;
 
   inline int entry_index(int batch, int location, int entry)
   {
