@@ -316,7 +316,7 @@ int yolo_detection() {
 
 
     //preprocess image
-	preprocess_image(caffe_net, FLAGS_input, resize_width, resize_height);
+	preprocess_image<Dtype>(caffe_net, FLAGS_input, resize_width, resize_height);
     
 	const vector<Blob*>& result = caffe_net.Forward();
     
@@ -422,7 +422,7 @@ int yolo_detection() {
 		}
 	}
  
-    draw_detections(FLAGS_input, side * side * num_object, result[0]->cpu_data<Dtype>(), result[1]->cpu_data<Dtype>(), num_class);
+    draw_detections<Dtype>(FLAGS_input, side * side * num_object, result[0]->cpu_data<Dtype>(), result[1]->cpu_data<Dtype>(), num_class);
     std::cout << "OK" << std::endl;
 
      return 0;
