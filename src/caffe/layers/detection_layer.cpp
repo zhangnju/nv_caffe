@@ -86,8 +86,8 @@ void DetectionLayer<Ftype, Btype>::Forward_cpu(
 		  int box_index = width_*height_*(num_class_ + num_object_) + (i*num_object_ + n) * 4;
 		  box_data[index*coords_] = (input_data[box_index + 0] + col) / width_; //check me ,here need to multiplied by image width
 		  box_data[index*coords_ + 1] = (input_data[box_index + 1] + row) / width_;//check me ,here need to multiplied by image height
-		  box_data[index*coords_ + 2] = pow(input_data[box_index + 2], (sqrt_ ? 2 : 1));
-		  box_data[index*coords_ + 3] = pow(input_data[box_index + 3], (sqrt_ ? 2 : 1));
+		  box_data[index*coords_ + 2] = pow(input_data[box_index + 2], Ftype((sqrt_ ? 2 : 1)));
+		  box_data[index*coords_ + 3] = pow(input_data[box_index + 3], Ftype((sqrt_ ? 2 : 1)));
 		  Ftype max_prob = 0;
 		  for (int j = 0; j < num_class_; ++j){
 			  int class_index = i*num_class_;
