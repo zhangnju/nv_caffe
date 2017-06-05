@@ -210,14 +210,14 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 typedef struct{
 	int index_;
 	int class_;
-	float16 *probs_;
+	caffe::float16 *probs_;
 } sortable_bbox;
 
 int nms_comparator(const void *pa, const void *pb)
 {
 	sortable_bbox a = *(sortable_bbox *)pa;
 	sortable_bbox b = *(sortable_bbox *)pb;
-	float16 diff = a.probs_[a.index_*(num_class+1)+a.class_] - b.probs_[b.index_*(num_class+1)+b.class_];
+	caffe::float16 diff = a.probs_[a.index_*(num_class+1)+a.class_] - b.probs_[b.index_*(num_class+1)+b.class_];
 	if (diff < 0) return 1;
 	else if (diff > 0) return -1;
 	return 0;
@@ -422,7 +422,7 @@ int yolo_detection() {
 		}
 	}
  
-    draw_detections(FLAGS_input, side * side * num_object, result[0]->cpu_data(), result[1]->cpu_data(), num_class);
+    draw_detections(FLAGS_input, side * side * num_object, result[0]->cpu_data<Dtype>(), result[1]->cpu_data<Dtype>(), num_class);
     std::cout << "OK" << std::endl;
 
      return 0;
@@ -443,5 +443,5 @@ int main(int argc, char** argv) {
         "    yolo_detection [FLAGS] \n");
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   
-  return yolo_detection<float16>();
+  return yolo_detection<caffe::float16>();
 }
