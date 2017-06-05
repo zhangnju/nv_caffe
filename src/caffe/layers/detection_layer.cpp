@@ -92,10 +92,10 @@ void DetectionLayer<Ftype, Btype>::Forward_cpu(
 		  for (int j = 0; j < num_class_; ++j){
 			  int class_index = i*num_class_;
 			  Ftype prob = scale*input_data[class_index + j];
-			  prob_data[index*(num_class_+1) + j] = (prob > Ftype(thresh_)) ? prob : 0;
+			  prob_data[index*(num_class_+1) + j] = (prob > Ftype(thresh_)) ? prob : Ftype(0);
 			  if (prob > max_prob) max_prob = prob;
 		  }
-		  prob_data[index*(num_class_ + 1) + num_class_] = max_prob>Ftype(thresh_) ? max_prob : 0;
+		  prob_data[index*(num_class_ + 1) + num_class_] = max_prob>Ftype(thresh_) ? max_prob : Ftype(0);
 	  }
   }
   
