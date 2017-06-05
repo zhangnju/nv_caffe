@@ -18,7 +18,7 @@
 #include "caffe/util/db.hpp"
 #include "caffe/util/format.hpp"
 #include "caffe/blob.hpp"
-#include "caffe/common.hpp"
+#include "caffe/util/float16.hpp"
 
 using caffe::Blob;
 using caffe::Caffe;
@@ -165,7 +165,7 @@ void ComputeAP(const vector<pair<float, int> >& tp, const int num_pos,
 #endif
 static int num_class = 0;
 template <typename Dtype>
-void preprocess_image(Net<Dtype>& net,std::string& input, int width, int height)
+void preprocess_image(Net& net,std::string& input, int width, int height)
 {
 	cv::Mat resized, resized_float;
 	cv::Size size(width, height);
@@ -180,7 +180,7 @@ void preprocess_image(Net<Dtype>& net,std::string& input, int width, int height)
 	}
 	resized.convertTo(resized_float, CV_32FC3);
 
-	Blob<Dtype>* input_layer = net.input_blobs()[0];
+	Blob* input_layer = net.input_blobs()[0];
 	int num_channels_ = input_layer->channels();
 	CHECK(num_channels_ == 3 || num_channels_ == 1)
 		<< "Input layer should have 1 or 3 channels.";
@@ -191,7 +191,7 @@ void preprocess_image(Net<Dtype>& net,std::string& input, int width, int height)
 	net.Reshape();
 
 	std::vector<cv::Mat> input_channels;
-	float* input_data = input_layer->mutable_cpu_data();
+	float* input_data = input_layer->mutable_cpu_data<Dtype>();
 	for (int i = 0; i < input_layer->channels(); ++i) {
 		cv::Mat channel(height, width, CV_32FC1, input_data);
 		input_channels.push_back(channel);
@@ -202,8 +202,8 @@ void preprocess_image(Net<Dtype>& net,std::string& input, int width, int height)
 	for (int i = 0; i < input_layer->channels(); ++i) 
 	   cv::normalize(input_channels[i], input_channels[i], 1.0, 0.0, cv::NORM_MINMAX);
 
-	CHECK(reinterpret_cast<float*>(input_channels.at(0).data)
-		== net.input_blobs()[0]->cpu_data())
+	CHECK(reinterpret_cast<Dtype*>(input_channels.at(0).data)
+		== net.input_blobs()[0]->cpu_data<Dtype>())
 		<< "Input channels are not wrapping the input layer of the network.";
 
 }
@@ -311,18 +311,18 @@ int yolo_detection() {
 
     
     // Instantiate the caffe net.
-    Net<Dtype> caffe_net(FLAGS_model, caffe::TEST);
+    Net caffe_net(FLAGS_model, caffe::TEST);
     caffe_net.CopyTrainedLayersFrom(FLAGS_weights);
 
 
     //preprocess image
 	preprocess_image(caffe_net, FLAGS_input, resize_width, resize_height);
     
-	const vector<Blob<Dtype>*>& result = caffe_net.Forward();
+	const vector<Blob*>& result = caffe_net.Forward();
     
-    Dtype* box_data = result[0]->mutable_cpu_data();
+    Dtype* box_data = result[0]->mutable_cpu_data<Dtype>();
     int box_size = result[0]->count();
-	Dtype* prob_data = result[1]->mutable_cpu_data();
+	Dtype* prob_data = result[1]->mutable_cpu_data<Dtype>();
 	int prob_size = result[1]->count();
 
     if (FLAGS_type == 2)
