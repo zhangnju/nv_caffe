@@ -179,7 +179,7 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 		resized = orig_image;
 	}
 	resized.convertTo(resized_float, CV_32FC3);
-
+	
 	Blob* input_layer = net.input_blobs()[0];
 	int num_channels_ = input_layer->channels();
 	CHECK(num_channels_ == 3 || num_channels_ == 1)
@@ -189,18 +189,23 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 		input_geometry_.height, input_geometry_.width);
 	/* Forward dimension change to all layers. */
 	//net.Reshape();
-
+    
 	std::vector<cv::Mat> input_channels;
+	cv::split(resized_float, input_channels);
+	for (int i = 0; i < input_layer->channels(); ++i) 
+		 cv::normalize(input_channels[i], input_channels[i], 1.0, 0.0, cv::NORM_MINMAX);
+
 	Dtype* input_data = input_layer->mutable_cpu_data<Dtype>();
 	for (int i = 0; i < input_layer->channels(); ++i) {
-		cv::Mat channel(height, width, CV_32FC1, input_data);
-		input_channels.push_back(channel);
+		//cv::Mat channel(height, width, CV_32FC1, input_data);
+		//input_channels.push_back(channel);
+		for(int j=0;j<height; j++)
+			for(int k=0;k<width;k++)
+			*(input_data+j*width+k)=static_cast<caffe::float16>(input_channels[i].at<float>(j,k));
 		input_data += input_layer->width() * input_layer->height();
 	}
 
-	cv::split(resized_float, input_channels);
-	for (int i = 0; i < input_layer->channels(); ++i) 
-	   cv::normalize(input_channels[i], input_channels[i], 1.0, 0.0, cv::NORM_MINMAX);
+	
 
 	CHECK(reinterpret_cast<Dtype*>(input_channels.at(0).data)
 		== net.input_blobs()[0]->cpu_data<Dtype>())
