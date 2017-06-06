@@ -72,11 +72,15 @@ private:\
 
 #define INSTANTIATE_CLASS_CPU(classname) \
   char gInstantiationGuard##classname; \
-  template class classname<float16>
+  template class classname<float>; \
+  template class classname<double>
 
 #define INSTANTIATE_CLASS_CPU_FB(classname) \
   char gInstantiationGuard##classname; \
-  template class classname<float16, float16>
+  template class classname<float, float>; \
+  template class classname<float, double>; \
+  template class classname<double, float>; \
+  template class classname<double, double>
 
 // Instantiate a class with float and double specifications.
 #ifdef CPU_ONLY
@@ -92,6 +96,10 @@ private:\
 
 # define INSTANTIATE_CLASS_FB(classname) \
     INSTANTIATE_CLASS_CPU_FB(classname); \
+    template class classname<float16, float>; \
+    template class classname<float, float16>; \
+    template class classname<float16, double>; \
+    template class classname<double, float16>; \
     template class classname<float16, float16>
 
 # define INSTANTIATE_LAYER_GPU_FORWARD(classname) \
@@ -108,41 +116,96 @@ private:\
       const std::vector<Blob*>& top)
 
 # define INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, member) \
+  template void classname<float16, float>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<float, float16>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<float16, double>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<double, float16>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
   template void classname<float16, float16>::member( \
       const std::vector<Blob*>& bottom, \
       const std::vector<Blob*>& top)
 
 # define INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, member) \
+  template void classname<float16, float>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<float, float16>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<float16, double>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<double, float16>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
   template void classname<float16, float16>::member( \
       const std::vector<Blob*>& top, \
       const std::vector<bool>& propagate_down, \
       const std::vector<Blob*>& bottom)
 
 # define INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, member) \
-  template void classname<float16, float16>::member( \
+  template void classname<float, float>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<float, double>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<double, float>::member( \
+      const std::vector<Blob*>& bottom, \
+      const std::vector<Blob*>& top); \
+  template void classname<double, double>::member( \
       const std::vector<Blob*>& bottom, \
       const std::vector<Blob*>& top);
 
 # define INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, member) \
-  template void classname<float16, float16>::member( \
+  template void classname<float, float>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<float, double>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<double, float>::member( \
+      const std::vector<Blob*>& top, \
+      const std::vector<bool>& propagate_down, \
+      const std::vector<Blob*>& bottom); \
+  template void classname<double, double>::member( \
       const std::vector<Blob*>& top, \
       const std::vector<bool>& propagate_down, \
       const std::vector<Blob*>& bottom)
 
 #  define INSTANTIATE_LAYER_GPU_FORWARD_ONLY_FB(classname) \
+    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, Forward_gpu); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, Forward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_BACKWARD_ONLY_FB(classname) \
+    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, Backward_gpu); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, Backward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_FUNCS_FB(classname) \
+    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, Forward_gpu); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, Forward_gpu); \
+    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, Backward_gpu); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, Backward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_FW_MEMBER_FB(classname, member) \
+    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, member); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, member)
 
 #  define INSTANTIATE_LAYER_GPU_BW_MEMBER_FB(classname, member) \
+    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, member); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, member)
 
 #endif
