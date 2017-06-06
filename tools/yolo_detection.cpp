@@ -188,7 +188,7 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 	input_layer->Reshape(1, num_channels_,
 		input_geometry_.height, input_geometry_.width);
 	/* Forward dimension change to all layers. */
-	net.Reshape();
+	//net.Reshape();
 
 	std::vector<cv::Mat> input_channels;
 	Dtype* input_data = input_layer->mutable_cpu_data<Dtype>();
