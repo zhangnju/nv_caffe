@@ -130,25 +130,19 @@ private:\
       const std::vector<Blob*>& bottom)
 
 #  define INSTANTIATE_LAYER_GPU_FORWARD_ONLY_FB(classname) \
-    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, Forward_gpu); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, Forward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_BACKWARD_ONLY_FB(classname) \
-    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, Backward_gpu); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, Backward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_FUNCS_FB(classname) \
-    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, Forward_gpu); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, Forward_gpu); \
-    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, Backward_gpu); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, Backward_gpu)
 
 #  define INSTANTIATE_LAYER_GPU_FW_MEMBER_FB(classname, member) \
-    INSTANTIATE_LAYER_GPU_FORWARD_FB(classname, member); \
     INSTANTIATE_LAYER_GPU_FORWARD_F16_FB(classname, member)
 
 #  define INSTANTIATE_LAYER_GPU_BW_MEMBER_FB(classname, member) \
-    INSTANTIATE_LAYER_GPU_BACKWARD_FB(classname, member); \
     INSTANTIATE_LAYER_GPU_BACKWARD_F16_FB(classname, member)
 
 #endif
