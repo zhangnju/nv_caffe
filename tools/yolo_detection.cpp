@@ -207,9 +207,9 @@ void preprocess_image(Net& net,std::string& input, int width, int height)
 
 	
 
-	CHECK(reinterpret_cast<Dtype*>(input_channels.at(0).data)
-		== net.input_blobs()[0]->cpu_data<Dtype>())
-		<< "Input channels are not wrapping the input layer of the network.";
+	//CHECK(reinterpret_cast<Dtype*>(input_channels.at(0).data)
+	//	== net.input_blobs()[0]->cpu_data<Dtype>())
+	//	<< "Input channels are not wrapping the input layer of the network.";
 
 }
 typedef struct{
