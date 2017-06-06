@@ -31,6 +31,16 @@ class DetectionLayer : public Layer<Ftype, Btype> {
 	  }
   }
 
+  virtual void Forward_gpu(const vector<Blob*>& bottom,
+      const vector<Blob*>& top);
+
+  virtual void Backward_gpu(const vector<Blob*>& top,
+	  const vector<bool>& propagate_down, const vector<Blob*>& bottom){
+	  for (int i = 0; i < propagate_down.size(); ++i) {
+		  if (propagate_down[i]) { NOT_IMPLEMENTED; }
+	  }
+  }
+
   int width_;
   int height_;
   int coords_;
