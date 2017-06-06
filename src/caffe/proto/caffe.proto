@@ -23,8 +23,8 @@ message BlobProto {
   repeated double double_data = 8 [packed = true];
   repeated double double_diff = 9 [packed = true];
   // New raw storage (faster and takes 1/2 of space for FP16)
-  optional Type raw_data_type = 10;
-  optional Type raw_diff_type = 11;
+  optional Type raw_data_type = 10 [default = FLOAT16];
+  optional Type raw_diff_type = 11 [default = FLOAT16];
   optional bytes raw_data = 12 [packed = false];
   optional bytes raw_diff = 13 [packed = false];
   // 4D dimensions -- deprecated.  Use "shape" instead.
@@ -121,10 +121,10 @@ message NetParameter {
 
   // Default types for all layers
   // These work only when layer-specific ones are omitted
-  optional Type default_forward_type  = 11 [default = FLOAT];
-  optional Type default_backward_type = 12 [default = FLOAT];
-  optional Type default_forward_math  = 13 [default = FLOAT];
-  optional Type default_backward_math = 14 [default = FLOAT];
+  optional Type default_forward_type  = 11 [default = FLOAT16];
+  optional Type default_backward_type = 12 [default = FLOAT16];
+  optional Type default_forward_math  = 13 [default = FLOAT16];
+  optional Type default_backward_math = 14 [default = FLOAT16];
 
   // Sets default "conv_algos_override" value for every convolution layer
   optional string default_conv_algos_override = 17 [default = "-1,-1,-1"];
@@ -363,14 +363,14 @@ message LayerParameter {
   repeated string top = 4; // the name of each top blob
 
   // Type returned by Forward routines of a particular layer (aka 'Ftype')
-  optional Type forward_type = 145 [default = FLOAT];
+  optional Type forward_type = 145 [default = FLOAT16];
   // Type returned by Backward routines of a particular layer (aka 'Btype')
-  optional Type backward_type = 146 [default = FLOAT];
+  optional Type backward_type = 146 [default = FLOAT16];
   // Internal math types. Works for those layers where internal math type 
   // could be different compared to Ftype or Btype. For example, so called
   // "pseudo fp32 mode" in convolution layers. For other layers has no meaning. 
-  optional Type forward_math = 147 [default = FLOAT];
-  optional Type backward_math = 148 [default = FLOAT];
+  optional Type forward_math = 147 [default = FLOAT16];
+  optional Type backward_math = 148 [default = FLOAT16];
 
   optional bool debug = 149 [default = false];
   
